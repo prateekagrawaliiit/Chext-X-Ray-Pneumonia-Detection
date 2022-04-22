@@ -19,6 +19,6 @@ def app():
 
     ## Data
     The datasets consist of 5,863 high quality manually evalutated images of Chest X-Rays and consists of two categories **Pneumonia** and **Normal**.
-    [Link to Dataset](https://www.kaggle.com/code/arbazkhan971/pneumonia-detection-using-cnn-96-accuracy/data)
+    [Link to Dataset](https://drive.google.com/drive/folders/1aGjHxt5kODKb8STLm074sSkbNVRm7YIe?usp=sharing)
     """)
     

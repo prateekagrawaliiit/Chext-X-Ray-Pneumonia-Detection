@@ -1,6 +1,6 @@
 import streamlit as st
 from multiapp import MultiApp
-from apps import about, prediction_raw, prediction_enhanced, credits
+from apps import about, prediction_raw, credits
 from PIL import Image
 
 st.markdown(

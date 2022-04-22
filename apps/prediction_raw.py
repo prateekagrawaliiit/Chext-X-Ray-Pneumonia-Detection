@@ -11,7 +11,7 @@ import os
 import matplotlib.image as mpimg
 from fastai.vision import open_image, load_learner, image, torch
 from PIL import Image, ImageOps
-from .predict_raw import infer
+from .predict_raw import infer_raw,infer_enhanced
 import torch
 import time
 from pathlib import Path
@@ -36,44 +36,50 @@ def Image_Enhance(pth):
   for i in range(h):
     for j in range(w):
         img_new[i][j] = freq[img[i][j]]
-  return img_new
+
+  write_pth =  pth.split('.')[0] + '_enhanced.jpeg'
+  cv2.imwrite(write_pth, img_new)
+  return write_pth
 
 
 
 def app():
-    st.title("Chest X-Ray Classification Application")
+    st.title("")
     st.header("Classification Example")
-    option = st.radio('', ['Choose a Sample XRay', 'Upload your own XRay'])
-    if option == 'Choose a Sample XRay':
-        # Get a list of test images in the folder
-        test_imgs = os.listdir("test_imgs_raw/")
-        test_img = st.selectbox(
+    st.write("Choose a Sample Image")
+    test_imgs = os.listdir("test_imgs_raw/")
+    test_img = st.selectbox(
             'Please Select a Test Image:',
             test_imgs
         )
     # Display and then predict on that image
+    
+    if test_img is not None: 
         fl_path = "test_imgs_raw/"+test_img
         img = open_image(fl_path)
-        img_enhanced = Image_Enhance(fl_path)
+        enhanced_img_pth = Image_Enhance(fl_path)
+        img_enhanced = open_image(enhanced_img_pth)
         display_img = mpimg.imread(fl_path)
-        st.image(display_img, caption="Chosen XRay", use_column_width=True)
+        st.image(display_img, caption="Raw XRay", use_column_width=True)
+        st.write("Enhanced Image")
+        display_img = mpimg.imread(enhanced_img_pth)
+        st.image(display_img, caption="Enhanced Chest XRay", use_column_width=True)
         st.write("")
-    predict = st.button("Classify the image")
-    if predict:
-        with st.spinner("Identifying the Disease..."):
-            time.sleep(5)
-        labels, probs, model_names = infer_raw(img)
-        for i in range(len(labels)):
-            st.success("Image Classified as : {} with a Confidence of : {2f} by using the model : {}".format(
-                labels[i], probs[i], model_names[i]))
-        # st.success(f"Image Disease: {label}, Confidence: {prob:.2f}%")
-
-        with st.spinner("Identifying the Disease for enhanced image : "):
-            time.sleep(5)
-        labels, probs, model_names = infer_enhanced(img_enhanced)
-        for i in range(len(labels)):
-            st.success("Image Classified as : {} with a Confidence of : {2f} by using the model : {}".format(
-                labels[i], probs[i], model_names[i]))
+        predict = True
+        if predict:
+        	with st.spinner("Identifying the Disease..."):
+        		time.sleep(5)
+        		
+        	labels, probs, model_names = infer_raw(img)
+        	for i in range(len(labels)):
+        		st.success("Image Classified as : {} with a Confidence of : {:.2f} by using the model : {}".format(labels[i], probs[i], model_names[i]))
+        	with st.spinner("Identifying the Disease for enhanced image :"):
+        		time.sleep(5)
+        	st.write("""Predictions for Enhanced Image""")
+        	labels, probs, model_names = infer_enhanced(img_enhanced)
+        	for i in range(len(labels)):
+        		st.success("Image Classified as : {} with a Confidence of : {:.2f} by using the model : {}".format(
+		        labels[i], probs[i], model_names[i]))
 
     st.warning("NOTE: If you upload an Image which is not a Chest XRay, the model will give very wierd predictions because it's trained to identify which one of the 2 labels the model is most confident of.")
     st.write("Project by Group : Group 1")

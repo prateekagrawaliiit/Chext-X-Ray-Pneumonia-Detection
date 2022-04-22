@@ -11,12 +11,14 @@ def infer_raw(img):
     prep_probs = []
     model_names = []
     for m in models:
-        model = load_learner('models_raw/'+m+'/')
-        pred_class = model.predict(img)[0]
-        pred_prob = round(torch.max(model.predict(img)[2]).item()*100)
-        preds.append(pred_class)
-        prep_probs.append(pred_prob)
-        model_names.append(m)
+    	path = "models_raw/"+str(m)+"/"
+    	print(path)
+    	model = load_learner(path)
+    	pred_class = model.predict(img)[0]
+    	pred_prob = round(torch.max(model.predict(img)[2]).item()*100)
+    	preds.append(pred_class)
+    	prep_probs.append(pred_prob)
+    	model_names.append(m)
     return (preds,prep_probs,model_names)
 
 
